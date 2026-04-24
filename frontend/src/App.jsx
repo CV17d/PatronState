@@ -28,15 +28,28 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAction = async (endpoint, params = {}) => {
-    const url = new URL(`${API_BASE}/${endpoint}`);
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-    
+  const handleAction = async (action, data = {}) => {
     try {
-      await fetch(url, { method: 'POST' });
-      fetchStatus();
+      const endpoint = action === 'request' ? `request?floor=${data.floor}` :
+                       action === 'load' ? `load?weight=${data.weight}` : action;
+      
+      await fetch(`http://localhost:8080/api/elevator/${endpoint}`, { method: 'POST' });
+      
+      // Obtener el estado inmediatamente para reaccionar
+      const res = await fetch('http://localhost:8080/api/elevator/status');
+      const latestStatus = await res.json();
+      setStatus(latestStatus);
+
+      // Si las puertas se cerraron correctamente, automatizamos el viaje
+      if (action === 'close-doors' && latestStatus.state.includes('En movimiento')) {
+        setTimeout(async () => {
+          // Una vez termina la animación CSS del viaje (2.5s), llegamos al piso
+          await fetch(`http://localhost:8080/api/elevator/move`, { method: 'POST' });
+          fetchStatus(); // Refresca y abre puertas
+        }, 2500); 
+      }
     } catch (err) {
-      console.error(`Error in ${endpoint}:`, err);
+      console.error(`Error in action ${action}:`, err);
     }
   };
 
@@ -44,6 +57,9 @@ function App() {
   const isMoving = status.state.includes('En movimiento');
 
   const isDoorsClosed = status.state === 'En reposo' || status.state === 'En movimiento';
+  
+  // Mientras está en movimiento, calculamos la posición visual basándonos en el destino
+  const visualFloor = isMoving ? status.targetFloor : status.floor;
 
   return (
     <div className="main-container">
@@ -54,7 +70,7 @@ function App() {
         ))}
         <div 
           className={`elevator-car ${isMoving ? 'moving' : ''} ${isOverload ? 'overload' : ''}`}
-          style={{ bottom: `calc(${status.floor * 18}% + 1.5rem)` }}
+          style={{ bottom: `calc(${visualFloor * 18}% + 1.5rem)` }}
         >
           {/* Puertas animadas */}
           <div className={`door left-door ${isDoorsClosed ? 'closed' : 'open'}`}></div>
@@ -160,9 +176,8 @@ function App() {
               </div>
             </div>
 
-            <button onClick={() => handleAction('close-doors')} disabled={isMoving}>Cerrar Puertas</button>
-            <button onClick={() => handleAction('move')} disabled={!isMoving || isOverload}>Iniciar Viaje</button>
-            <button className="full-width danger" onClick={() => handleAction('unload')}>Reset / Vaciar</button>
+            <button onClick={() => handleAction('close-doors')} disabled={isMoving}>Cerrar Puertas y Viajar</button>
+            <button className="full-width danger" onClick={() => handleAction('unload')} disabled={isMoving}>Reset / Vaciar</button>
           </div>
         </div>
       </div>
