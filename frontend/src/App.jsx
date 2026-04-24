@@ -55,9 +55,9 @@ function App() {
           style={{ bottom: `calc(${status.floor * 18}% + 1.5rem)` }}
         >
           <div className={`cargo-visual ${status.weight > 0 ? 'visible' : ''}`}></div>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <span style={{fontSize: '0.8rem', fontWeight: 'bold', color: '#fff'}}>{status.floor}</span>
-            <span style={{fontSize: '0.6rem', color: 'rgba(255,255,255,0.7)'}}>{status.weight} kg</span>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-4px'}}>
+            <span style={{fontSize: '1.4rem', fontWeight: '900', color: '#fff', lineHeight: '1.2'}}>{status.floor}</span>
+            <span style={{fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600'}}>{status.weight} kg</span>
           </div>
         </div>
       </div>
