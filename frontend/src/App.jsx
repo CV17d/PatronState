@@ -149,8 +149,7 @@ function App() {
 
             <button onClick={() => handleAction('close-doors')} disabled={isMoving}>Cerrar Puertas</button>
             <button onClick={() => handleAction('move')} disabled={isMoving || isOverload}>Iniciar Viaje</button>
-            <button onClick={() => handleAction('arrive')} disabled={!isMoving}>Llegar</button>
-            <button className="danger" onClick={() => handleAction('unload')}>Reset / Vaciar</button>
+            <button className="full-width danger" onClick={() => handleAction('unload')}>Reset / Vaciar</button>
           </div>
         </div>
       </div>
