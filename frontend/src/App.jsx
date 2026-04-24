@@ -116,11 +116,12 @@ function App() {
                <select 
                 value={targetFloorInput} 
                 onChange={(e) => setTargetFloorInput(parseInt(e.target.value))}
-                style={{flex: 1, padding: '0.75rem', borderRadius: '12px', background: '#0f172a', color: '#fff', border: '1px solid rgba(255,255,255,0.1)'}}
+                disabled={isMoving}
+                style={{flex: 1, padding: '0.75rem', borderRadius: '12px', background: '#0f172a', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', opacity: isMoving ? 0.5 : 1}}
                >
                  {[0,1,2,3,4].map(f => <option key={f} value={f}>Ir al Piso {f}</option>)}
                </select>
-               <button onClick={() => handleAction('request', { floor: targetFloorInput })}>Solicitar</button>
+               <button onClick={() => handleAction('request', { floor: targetFloorInput })} disabled={isMoving}>Solicitar</button>
             </div>
 
             <div className="full-width" style={{display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem'}}>
@@ -132,6 +133,7 @@ function App() {
                   max="2000" 
                   step="50" 
                   value={inputWeight} 
+                  disabled={isMoving}
                   onChange={(e) => setInputWeight(parseInt(e.target.value) || 0)}
                 />
                 <input
@@ -139,6 +141,7 @@ function App() {
                   min="0"
                   max="2000"
                   value={inputWeight}
+                  disabled={isMoving}
                   onChange={(e) => setInputWeight(parseInt(e.target.value) || 0)}
                   style={{
                     width: '75px', 
@@ -148,16 +151,17 @@ function App() {
                     color: '#fff', 
                     border: '1px solid rgba(255,255,255,0.1)', 
                     textAlign: 'center', 
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    opacity: isMoving ? 0.5 : 1
                   }}
                 />
                 <span style={{fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)'}}>kg</span>
-                <button onClick={() => handleAction('load', { weight: inputWeight })}>Cargar</button>
+                <button onClick={() => handleAction('load', { weight: inputWeight })} disabled={isMoving}>Cargar</button>
               </div>
             </div>
 
             <button onClick={() => handleAction('close-doors')} disabled={isMoving}>Cerrar Puertas</button>
-            <button onClick={() => handleAction('move')} disabled={isMoving || isOverload}>Iniciar Viaje</button>
+            <button onClick={() => handleAction('move')} disabled={!isMoving || isOverload}>Iniciar Viaje</button>
             <button className="full-width danger" onClick={() => handleAction('unload')}>Reset / Vaciar</button>
           </div>
         </div>
