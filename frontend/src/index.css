@@ -76,9 +76,9 @@ body {
   width: 85%;
   height: 85px;
   left: 7.5%;
-  background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+  background: #1e293b;
   border: 2px solid var(--primary);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: bottom 2.5s cubic-bezier(0.65, 0, 0.35, 1);
   display: flex;
   flex-direction: column;
@@ -86,6 +86,50 @@ body {
   align-items: center;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
   z-index: 10;
+  overflow: hidden;
+}
+
+.door {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, #334155 0%, #0f172a 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 15;
+}
+
+.left-door {
+  left: 0;
+  transform-origin: left;
+}
+
+.right-door {
+  right: 0;
+  transform-origin: right;
+  background: linear-gradient(270deg, #334155 0%, #0f172a 100%);
+}
+
+.left-door.open, .right-door.open {
+  transform: scaleX(0.15); /* Leaves a small margin visible */
+}
+
+.left-door.closed, .right-door.closed {
+  transform: scaleX(1);
+}
+
+.elevator-hud {
+  position: relative;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .control-panel {
@@ -230,15 +274,38 @@ h1 {
 }
 
 .cargo-visual {
-  width: 30px;
-  height: 20px;
-  background: var(--accent-gold);
-  border-radius: 4px;
-  margin-bottom: 6px;
+  position: absolute;
+  bottom: 0;
+  width: 35px;
+  height: 25px;
+  background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%);
+  border-radius: 4px 4px 0 0;
   display: none;
-  box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  z-index: 12;
 }
 
 .cargo-visual.visible {
   display: block;
+}
+
+.cargo-visual.dropping {
+  animation: dropCargo 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes dropCargo {
+  0% { transform: translateY(-60px) scale(0.5) rotate(-10deg); opacity: 0; }
+  100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; }
+}
+
+.elevator-car.overload {
+  border-color: var(--danger);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }

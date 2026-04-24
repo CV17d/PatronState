@@ -40,8 +40,10 @@ function App() {
     }
   };
 
-  const isOverload = status.state.includes('OVERLOAD');
-  const isMoving = status.state.includes('MOVING');
+  const isOverload = status.state.includes('Sobrecarga');
+  const isMoving = status.state.includes('En movimiento');
+
+  const isDoorsClosed = status.state === 'En reposo' || status.state === 'En movimiento';
 
   return (
     <div className="main-container">
@@ -54,8 +56,15 @@ function App() {
           className={`elevator-car ${isMoving ? 'moving' : ''} ${isOverload ? 'overload' : ''}`}
           style={{ bottom: `calc(${status.floor * 18}% + 1.5rem)` }}
         >
-          <div className={`cargo-visual ${status.weight > 0 ? 'visible' : ''}`}></div>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-4px'}}>
+          {/* Puertas animadas */}
+          <div className={`door left-door ${isDoorsClosed ? 'closed' : 'open'}`}></div>
+          <div className={`door right-door ${isDoorsClosed ? 'closed' : 'open'}`}></div>
+
+          {/* Animación del paquete (re-renderiza cuando cambia el peso) */}
+          <div key={`cargo-${status.weight}`} className={`cargo-visual ${status.weight > 0 ? 'visible dropping' : ''}`}></div>
+          
+          {/* HUD digital sobre las puertas */}
+          <div className="elevator-hud">
             <span style={{fontSize: '1.4rem', fontWeight: '900', color: '#fff', lineHeight: '1.2'}}>{status.floor}</span>
             <span style={{fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600'}}>{status.weight} kg</span>
           </div>
